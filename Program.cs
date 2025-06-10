@@ -1,4 +1,9 @@
 
+using CodePulseAPI.Data;
+using CodePulseAPI.Repositories.Implementation;
+using CodePulseAPI.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
+
 namespace CodePulseAPI
 {
     public class Program
@@ -13,6 +18,13 @@ namespace CodePulseAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionStrings"));
+            });
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             var app = builder.Build();
 
