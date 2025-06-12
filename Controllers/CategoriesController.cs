@@ -39,5 +39,12 @@ namespace CodePulseAPI.Controllers
 
             return Ok(response);
         }
+
+        //Get: /api/categories
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var categories = await _categoryRepository.GetAllAsync();
+        }
     }
 }
