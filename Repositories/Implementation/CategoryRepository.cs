@@ -13,13 +13,27 @@ namespace CodePulseAPI.Repositories.Implementation
         {
             _context = context;
         }
-
+          
         public async Task<Category> CreateAsync(Category category)
         {
             await _context.Categories.AddAsync(category); 
             await _context.SaveChangesAsync();
 
             return category;
+        }
+
+        public async Task<Category?> DeleteAsync(Guid id)
+        {
+            var existingCategory = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingCategory == null)
+            {
+                return null;
+            }
+
+            _context.Categories.Remove(existingCategory);
+            await _context.SaveChangesAsync();
+            return existingCategory;
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync()
