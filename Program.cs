@@ -3,6 +3,7 @@ using CodePulseAPI.Data;
 using CodePulseAPI.Repositories.Implementation;
 using CodePulseAPI.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace CodePulseAPI
 {
@@ -15,6 +16,8 @@ namespace CodePulseAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddHttpContextAccessor();  
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -26,6 +29,7 @@ namespace CodePulseAPI
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
             var app = builder.Build();
 
@@ -46,6 +50,11 @@ namespace CodePulseAPI
 
             app.UseAuthorization();
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+                RequestPath = "/Images"
+            }); 
 
             app.MapControllers();
 
