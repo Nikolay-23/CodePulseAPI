@@ -11,10 +11,11 @@ namespace CodePulseAPI.Controllers
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private readonly IImageRepository _imageRepository;
+        private readonly IImageRepository imageRepository;
+
         public ImagesController(IImageRepository imageRepository)
         {
-            _imageRepository = imageRepository;
+            this.imageRepository = imageRepository;
         }
 
         // GET: {apibaseURL}/api/Images
@@ -22,11 +23,11 @@ namespace CodePulseAPI.Controllers
         public async Task<IActionResult> GetAllImages()
         {
             // call image repository to get all images
-            var images = await _imageRepository.GetAll();
+            var images = await imageRepository.GetAll();
 
-            // convert Domain model to DTO
+            // Convert Domain model to DTO
             var response = new List<BlogImageDto>();
-            foreach(var image in images)
+            foreach (var image in images)
             {
                 response.Add(new BlogImageDto
                 {
@@ -42,6 +43,7 @@ namespace CodePulseAPI.Controllers
             return Ok(response);
         }
 
+
         // POST: {apibaseurl}/api/images
         [HttpPost]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile file,
@@ -49,9 +51,9 @@ namespace CodePulseAPI.Controllers
         {
             ValidateFileUpload(file);
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                // File upload 
+                // File upload
                 var blogImage = new BlogImage
                 {
                     FileExtension = Path.GetExtension(file.FileName).ToLower(),
@@ -60,7 +62,7 @@ namespace CodePulseAPI.Controllers
                     DateCreated = DateTime.Now
                 };
 
-                blogImage = await _imageRepository.Upload(file, blogImage);
+                blogImage = await imageRepository.Upload(file, blogImage);
 
                 // Convert Domain Model to DTO
                 var response = new BlogImageDto
@@ -69,11 +71,11 @@ namespace CodePulseAPI.Controllers
                     Title = blogImage.Title,
                     DateCreated = blogImage.DateCreated,
                     FileExtension = blogImage.FileExtension,
-                    FileName = blogImage.FileName, 
+                    FileName = blogImage.FileName,
                     Url = blogImage.Url
                 };
 
-                return Ok(blogImage);
+                return Ok(response);
             }
 
             return BadRequest(ModelState);
@@ -83,16 +85,16 @@ namespace CodePulseAPI.Controllers
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-
             if (!allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
             {
                 ModelState.AddModelError("file", "Unsupported file format");
             }
 
-            if(file.Length > 10485760)
+            if (file.Length > 10485760)
             {
                 ModelState.AddModelError("file", "File size cannot be more than 10MB");
             }
         }
+
     }
 }
