@@ -46,25 +46,22 @@ namespace CodePulseAPI.Controllers
 
         // POST: {apibaseurl}/api/images
         [HttpPost]
-        public async Task<IActionResult> UploadImage([FromForm] IFormFile file,
-            [FromForm] string fileName, [FromForm] string title)
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequest request)
         {
-            ValidateFileUpload(file);
+            ValidateFileUpload(request.File);
 
             if (ModelState.IsValid)
             {
-                // File upload
                 var blogImage = new BlogImage
                 {
-                    FileExtension = Path.GetExtension(file.FileName).ToLower(),
-                    FileName = fileName,
-                    Title = title,
+                    FileExtension = Path.GetExtension(request.File.FileName).ToLower(),
+                    FileName = request.FileName,
+                    Title = request.Title,
                     DateCreated = DateTime.Now
                 };
 
-                blogImage = await imageRepository.Upload(file, blogImage);
+                blogImage = await imageRepository.Upload(request.File, blogImage);
 
-                // Convert Domain Model to DTO
                 var response = new BlogImageDto
                 {
                     Id = blogImage.Id,
